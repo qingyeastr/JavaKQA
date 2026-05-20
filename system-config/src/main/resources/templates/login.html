@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>系统配置模块登录</title>
+	<link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<main class="auth-shell">
+	<section class="auth-card">
+		<div class="brand-kicker">JavaKQA</div>
+		<h1 class="brand-title">系统配置模块</h1>
+		<p class="brand-subtitle">基于系统配置模块开发文档搭建的后台基础系统，当前支持登录、配置管理、管理员账号管理和操作日志查看。</p>
+
+		<div class="hint-box">默认管理员账号：admin / 123456</div>
+
+		<div class="error-message" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
+		<form th:action="@{/login}" th:object="${loginForm}" method="post">
+			<div>
+				<label for="username">用户名</label>
+				<input id="username" type="text" th:field="*{username}" placeholder="请输入管理员用户名">
+				<div class="field-error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+			</div>
+			<div>
+				<label for="password">密码</label>
+				<input id="password" type="password" th:field="*{password}" placeholder="请输入密码">
+				<div class="field-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+			</div>
+			<button class="primary-btn" type="submit">登录系统</button>
+		</form>
+	</section>
+</main>
+</body>
+</html>

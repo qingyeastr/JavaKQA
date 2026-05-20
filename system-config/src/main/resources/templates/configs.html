@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>配置管理</title>
+	<link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div class="layout">
+	<aside class="sidebar">
+		<div>
+			<div class="brand-kicker">JavaKQA</div>
+			<h1>system-config</h1>
+			<p>父工程采用 framework + system-config 多模块结构，当前页面对应系统配置模块的基础后台。</p>
+		</div>
+		<nav class="menu">
+			<a class="active" th:href="@{/configs}">配置管理</a>
+			<a th:href="@{/users}">管理员账号</a>
+			<a th:href="@{/logs}">操作日志</a>
+		</nav>
+		<form th:action="@{/logout}" method="post">
+			<button type="submit">退出登录</button>
+		</form>
+	</aside>
+
+	<main class="content">
+		<header class="page-header">
+			<div>
+				<h2>配置管理</h2>
+				<p>支持新增、编辑、启用和停用配置项，数据库连接配置已收敛到 system-config 模块的 application.properties 中。</p>
+			</div>
+			<div class="user-badge" th:if="${currentUser != null}">
+				<div th:text="'当前登录：' + ${currentUser.username}"></div>
+				<div th:text="'角色：' + ${currentUser.roleCode}"></div>
+			</div>
+		</header>
+
+		<div class="message" th:if="${message}" th:text="${message}"></div>
+		<div class="error-message" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
+		<section class="panel">
+			<h3>新增配置项</h3>
+			<p>这里可以录入模型配置、检索参数、问答参数和系统开关。页面字段与开发文档中的 system_config 表设计保持一致。</p>
+			<div class="error-message" th:if="${formError}" th:text="${formError}"></div>
+			<form th:action="@{/configs}" th:object="${configForm}" method="post">
+				<div class="form-grid">
+					<div>
+						<label for="configKey">配置标识</label>
+						<input id="configKey" type="text" th:field="*{configKey}" placeholder="例如 retrieval.keyword.top-k">
+					</div>
+					<div>
+						<label for="configName">配置名称</label>
+						<input id="configName" type="text" th:field="*{configName}" placeholder="例如 关键词检索 TopK">
+					</div>
+					<div>
+						<label for="configGroup">配置分组</label>
+						<input id="configGroup" type="text" th:field="*{configGroup}" placeholder="model / retrieval / prompt / system">
+					</div>
+					<div>
+						<label for="valueType">值类型</label>
+						<select id="valueType" th:field="*{valueType}">
+							<option value="string">string</option>
+							<option value="number">number</option>
+							<option value="boolean">boolean</option>
+							<option value="json">json</option>
+						</select>
+					</div>
+					<div class="span-2">
+						<label for="configValue">配置值</label>
+						<textarea id="configValue" th:field="*{configValue}" placeholder="请输入配置值"></textarea>
+					</div>
+					<div class="span-2">
+						<label for="description">说明</label>
+						<textarea id="description" th:field="*{description}" placeholder="补充配置作用和说明"></textarea>
+					</div>
+				</div>
+				<div class="actions">
+					<button class="primary-btn" type="submit">保存配置项</button>
+					<span class="small-note">新配置默认启用，可在下方列表中继续调整。</span>
+				</div>
+			</form>
+		</section>
+
+		<section class="card-grid">
+			<div class="group-card" th:each="groupEntry : ${groupedConfigs}">
+				<div class="group-title">
+					<div>
+						<h4 th:text="${groupEntry.key}"></h4>
+						<p th:text="'当前分组共 ' + ${#lists.size(groupEntry.value)} + ' 条配置'"></p>
+					</div>
+					<span class="tag">配置分组</span>
+				</div>
+
+				<div class="config-list">
+					<div class="config-card" th:each="config : ${groupEntry.value}">
+						<div class="group-title">
+							<div>
+								<h5 th:text="${config.configName}"></h5>
+								<div class="meta-line">
+									<span th:text="'config_key: ' + ${config.configKey}"></span>
+									<span th:text="'更新时间: ' + ${#temporals.format(config.updatedAt, 'yyyy-MM-dd HH:mm:ss')}"></span>
+								</div>
+							</div>
+							<span th:class="${config.enabled} ? 'status-chip enabled' : 'status-chip disabled'"
+							      th:text="${config.enabled} ? '已启用' : '已停用'"></span>
+						</div>
+
+						<form th:action="@{/configs/{id}/update(id=${config.id})}" method="post">
+							<div class="inline-grid">
+								<div>
+									<label>配置标识</label>
+									<input type="text" name="configKey" th:value="${config.configKey}">
+								</div>
+								<div>
+									<label>配置名称</label>
+									<input type="text" name="configName" th:value="${config.configName}">
+								</div>
+								<div>
+									<label>配置分组</label>
+									<input type="text" name="configGroup" th:value="${config.configGroup}">
+								</div>
+							</div>
+							<div class="inline-grid">
+								<div>
+									<label>值类型</label>
+									<select name="valueType">
+										<option value="string" th:selected="${config.valueType == 'string'}">string</option>
+										<option value="number" th:selected="${config.valueType == 'number'}">number</option>
+										<option value="boolean" th:selected="${config.valueType == 'boolean'}">boolean</option>
+										<option value="json" th:selected="${config.valueType == 'json'}">json</option>
+									</select>
+								</div>
+								<div>
+									<label>是否启用</label>
+									<select name="enabled">
+										<option value="true" th:selected="${config.enabled}">启用</option>
+										<option value="false" th:selected="${!config.enabled}">停用</option>
+									</select>
+								</div>
+								<div>
+									<label>说明</label>
+									<input type="text" name="description" th:value="${config.description}">
+								</div>
+							</div>
+							<div>
+								<label>配置值</label>
+								<textarea name="configValue" th:text="${config.configValue}"></textarea>
+							</div>
+							<div class="actions">
+								<button class="primary-btn" type="submit">保存修改</button>
+							</div>
+						</form>
+
+						<form th:action="@{/configs/{id}/status(id=${config.id})}" method="post">
+							<input type="hidden" name="enabled" th:value="${!config.enabled}">
+							<button th:class="${config.enabled} ? 'warning-btn' : 'secondary-btn'" type="submit"
+							        th:text="${config.enabled} ? '快速停用' : '快速启用'"></button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</section>
+	</main>
+</div>
+</body>
+</html>

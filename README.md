@@ -154,10 +154,10 @@ JavaKQA 是一个面向 Java 后端技术生态的智能问答助手系统，项
 
 当前仓库已具备以下基础：
 
-- 已初始化 Spring Boot 项目骨架
-- 已配置 Maven Wrapper
-- 已包含基础启动类与默认测试类
-- 当前依赖以 Spring MVC、JDBC、Lombok 为主
+- 已重构为 Maven 多模块工程，包含 framework 与 system-config 两个模块
+- framework 模块承载可复用的基础实体和登录会话常量
+- system-config 模块提供浏览器可访问的后台系统，包含登录、配置管理、管理员账号管理和操作日志页面
+- system-config 模块已内置 PostgreSQL 连接配置与建表脚本，启动时会自动初始化核心表
 
 当前仓库尚未完成以下内容：
 
@@ -168,12 +168,33 @@ JavaKQA 是一个面向 Java 后端技术生态的智能问答助手系统，项
 - RAG 问答服务与模型接入
 - 用户反馈、数据分析、系统配置后台页面
 
+## 当前模块结构
+
+- framework：公共基础模块，放通用实体、登录态对象、会话常量等可复用代码
+- system-config：系统配置后台模块，负责页面、登录、配置管理、用户管理与日志管理
+
+system-config 模块当前默认数据库配置位于 system-config/src/main/resources/application.properties。
+默认管理员账号会在首次启动时自动写入 PostgreSQL：admin / 123456。
+
 ## 启动方式
 
-当前阶段可先启动后端骨架项目：
+当前阶段可先启动 system-config 模块：
 
 ```bash
-./mvnw spring-boot:run
+./mvnw -pl system-config -am spring-boot:run
+```
+
+如果首次导入后本地还没有打过包，也可以直接执行：
+
+```bash
+./mvnw -pl system-config -am package
+java -jar system-config/target/system-config-0.0.1-SNAPSHOT.jar
+```
+
+启动后在本地浏览器访问：
+
+```text
+http://localhost:8080/login
 ```
 
 或执行测试：

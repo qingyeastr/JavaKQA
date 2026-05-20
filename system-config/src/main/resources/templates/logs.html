@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>操作日志</title>
+	<link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div class="layout">
+	<aside class="sidebar">
+		<div>
+			<div class="brand-kicker">JavaKQA</div>
+			<h1>system-config</h1>
+			<p>用于追踪登录、配置变更和管理员状态切换等关键行为，便于后续扩展后台审计能力。</p>
+		</div>
+		<nav class="menu">
+			<a th:href="@{/configs}">配置管理</a>
+			<a th:href="@{/users}">管理员账号</a>
+			<a class="active" th:href="@{/logs}">操作日志</a>
+		</nav>
+		<form th:action="@{/logout}" method="post">
+			<button type="submit">退出登录</button>
+		</form>
+	</aside>
+
+	<main class="content">
+		<header class="page-header">
+			<div>
+				<h2>操作日志</h2>
+				<p>列表展示最近 50 条后台操作记录，当前数据落在 PostgreSQL 的 operation_log 表。</p>
+			</div>
+			<div class="user-badge" th:if="${currentUser != null}">
+				<div th:text="'当前登录：' + ${currentUser.username}"></div>
+				<div th:text="'角色：' + ${currentUser.roleCode}"></div>
+			</div>
+		</header>
+
+		<section class="table-panel">
+			<h3>最近操作</h3>
+			<p>登录、退出、配置新增与变更、管理员状态切换都会记录到这里。</p>
+			<div class="table-wrapper">
+				<table>
+					<thead>
+					<tr>
+						<th>时间</th>
+						<th>模块</th>
+						<th>类型</th>
+						<th>操作人 ID</th>
+						<th>内容</th>
+					</tr>
+					</thead>
+					<tbody>
+					<tr th:each="log : ${logs}">
+						<td th:text="${#temporals.format(log.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+						<td th:text="${log.moduleName}"></td>
+						<td><span class="tag" th:text="${log.operationType}"></span></td>
+						<td th:text="${log.operatorId != null} ? ${log.operatorId} : '-' "></td>
+						<td th:text="${log.operationContent}"></td>
+					</tr>
+					<tr th:if="${#lists.isEmpty(logs)}">
+						<td colspan="5">当前还没有操作记录。</td>
+					</tr>
+					</tbody>
+				</table>
+			</div>
+		</section>
+	</main>
+</div>
+</body>
+</html>
