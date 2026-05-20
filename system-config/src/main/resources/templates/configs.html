@@ -4,15 +4,15 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>配置管理</title>
-	<link rel="stylesheet" th:href="@{/css/app.css}">
+	<link rel="stylesheet" th:href="@{/css/app.css(v='20260520b')}">
 </head>
 <body>
 <div class="layout">
 	<aside class="sidebar">
 		<div>
 			<div class="brand-kicker">JavaKQA</div>
-			<h1>system-config</h1>
-			<p>父工程采用 framework + system-config 多模块结构，当前页面对应系统配置模块的基础后台。</p>
+			<h1>系统配置后台</h1>
+			<p>用于维护智能问答系统的运行参数、管理员账号和操作记录。</p>
 		</div>
 		<nav class="menu">
 			<a class="active" th:href="@{/configs}">配置管理</a>
@@ -28,7 +28,7 @@
 		<header class="page-header">
 			<div>
 				<h2>配置管理</h2>
-				<p>支持新增、编辑、启用和停用配置项，数据库连接配置已收敛到 system-config 模块的 application.properties 中。</p>
+				<p>在这里集中维护智能问答系统的模型、检索、问答和系统开关参数，保存后即可作为后台运行配置使用。</p>
 			</div>
 			<div class="user-badge" th:if="${currentUser != null}">
 				<div th:text="'当前登录：' + ${currentUser.username}"></div>
@@ -39,128 +39,185 @@
 		<div class="message" th:if="${message}" th:text="${message}"></div>
 		<div class="error-message" th:if="${errorMessage}" th:text="${errorMessage}"></div>
 
-		<section class="panel">
-			<h3>新增配置项</h3>
-			<p>这里可以录入模型配置、检索参数、问答参数和系统开关。页面字段与开发文档中的 system_config 表设计保持一致。</p>
-			<div class="error-message" th:if="${formError}" th:text="${formError}"></div>
-			<form th:action="@{/configs}" th:object="${configForm}" method="post">
-				<div class="form-grid">
-					<div>
-						<label for="configKey">配置标识</label>
-						<input id="configKey" type="text" th:field="*{configKey}" placeholder="例如 retrieval.keyword.top-k">
-					</div>
-					<div>
-						<label for="configName">配置名称</label>
-						<input id="configName" type="text" th:field="*{configName}" placeholder="例如 关键词检索 TopK">
-					</div>
-					<div>
-						<label for="configGroup">配置分组</label>
-						<input id="configGroup" type="text" th:field="*{configGroup}" placeholder="model / retrieval / prompt / system">
-					</div>
-					<div>
-						<label for="valueType">值类型</label>
-						<select id="valueType" th:field="*{valueType}">
-							<option value="string">string</option>
-							<option value="number">number</option>
-							<option value="boolean">boolean</option>
-							<option value="json">json</option>
-						</select>
-					</div>
-					<div class="span-2">
-						<label for="configValue">配置值</label>
-						<textarea id="configValue" th:field="*{configValue}" placeholder="请输入配置值"></textarea>
-					</div>
-					<div class="span-2">
-						<label for="description">说明</label>
-						<textarea id="description" th:field="*{description}" placeholder="补充配置作用和说明"></textarea>
-					</div>
-				</div>
-				<div class="actions">
-					<button class="primary-btn" type="submit">保存配置项</button>
-					<span class="small-note">新配置默认启用，可在下方列表中继续调整。</span>
-				</div>
-			</form>
-		</section>
-
-		<section class="card-grid">
-			<div class="group-card" th:each="groupEntry : ${groupedConfigs}">
-				<div class="group-title">
-					<div>
-						<h4 th:text="${groupEntry.key}"></h4>
-						<p th:text="'当前分组共 ' + ${#lists.size(groupEntry.value)} + ' 条配置'"></p>
-					</div>
-					<span class="tag">配置分组</span>
-				</div>
-
-				<div class="config-list">
-					<div class="config-card" th:each="config : ${groupEntry.value}">
-						<div class="group-title">
+		<div class="settings-shell">
+			<aside class="settings-catalog">
+				<section class="catalog-card">
+					<h3>配置分类</h3>
+					<p>先选择需要维护的配置分类，右侧会展示该分类下的全部参数，便于集中查看和修改。</p>
+					<nav class="catalog-list" th:if="${!#lists.isEmpty(configGroups)}">
+						<a class="catalog-link"
+						   th:each="groupDefinition : ${configGroups}"
+						   th:href="@{/configs(group=${groupDefinition.key})}"
+						   th:classappend="${groupDefinition.key == activeGroup} ? ' active' : ''">
 							<div>
-								<h5 th:text="${config.configName}"></h5>
-								<div class="meta-line">
-									<span th:text="'config_key: ' + ${config.configKey}"></span>
-									<span th:text="'更新时间: ' + ${#temporals.format(config.updatedAt, 'yyyy-MM-dd HH:mm:ss')}"></span>
-								</div>
+								<strong th:text="${groupDefinition.label}"></strong>
+								<span th:text="${groupDefinition.summary}"></span>
 							</div>
-							<span th:class="${config.enabled} ? 'status-chip enabled' : 'status-chip disabled'"
-							      th:text="${config.enabled} ? '已启用' : '已停用'"></span>
-						</div>
+							<span class="catalog-count" th:text="${#lists.size(groupedConfigs[groupDefinition.key])}"></span>
+						</a>
+					</nav>
+					<div class="small-note" th:if="${#lists.isEmpty(configGroups)}">当前还没有固定配置分组。</div>
+				</section>
+			</aside>
 
-						<form th:action="@{/configs/{id}/update(id=${config.id})}" method="post">
-							<div class="inline-grid">
+			<section class="settings-detail">
+				<section class="panel settings-intro">
+					<div class="settings-summary">
+						<div>
+							<h3 th:text="${activeGroupDefinition != null} ? ${activeGroupDefinition.label} : '配置详情'"></h3>
+							<p th:text="${activeGroupDefinition != null} ? ${activeGroupDefinition.summary} : '当前未选中配置分组。'"></p>
+						</div>
+						<span class="tag" th:text="${activeGroupDefinition != null} ? '固定配置 ' + ${#lists.size(activeConfigs)} + ' 项' : '固定配置'"></span>
+					</div>
+					<div class="quick-jump" th:if="${!#lists.isEmpty(activeConfigs)}">
+						<div class="quick-jump-head">
+							<span class="info-label">参数定位</span>
+							<p>点击配置项名称可直接跳转到对应参数卡片。</p>
+						</div>
+						<div class="quick-jump-list">
+							<a class="quick-jump-link" th:if="${activeGroup == 'model'}" href="#model-llm-settings">大语言模型配置</a>
+							<a class="quick-jump-link"
+							   th:each="config : ${activeGroup == 'model' ? modelEmbeddingConfigs : activeConfigs}"
+							   th:with="definition=${configDefinitions.get(config.configKey)}"
+							   th:href="${'#config-' + config.id}"
+							   th:text="${definition.name}"></a>
+						</div>
+					</div>
+				</section>
+
+				<section class="group-card group-section" th:if="${activeGroup != null}">
+					<div class="group-title settings-group-head">
+						<div>
+							<h4 th:text="${activeGroupDefinition != null} ? ${activeGroupDefinition.label} : ${activeGroup}"></h4>
+							<p th:text="'当前分类共 ' + ${#lists.size(activeConfigs)} + ' 项参数，可逐项调整配置值和启用状态。'"></p>
+						</div>
+						<span class="tag" th:text="${#lists.size(activeConfigs)} + ' 项参数'"></span>
+					</div>
+
+					<div class="config-section-stack" th:if="${activeGroup == 'model'}">
+						<section class="config-subsection"
+						         id="model-llm-settings"
+						         th:if="${modelLlmModelIdConfig != null and modelLlmApiBaseUrlConfig != null and modelLlmApiKeyConfig != null}">
+							<div class="subsection-head">
 								<div>
-									<label>配置标识</label>
-									<input type="text" name="configKey" th:value="${config.configKey}">
+									<h5>大语言模型配置</h5>
+									<p>这里只维护当前使用的大语言模型配置。</p>
 								</div>
+								<span class="tag">3 项</span>
+							</div>
+							<div class="config-card model-llm-card">
+								<form th:action="@{/configs/model-llm/update}" method="post">
+									<div class="config-value-editor">
+										<label for="modelId">模型 ID</label>
+										<input id="modelId" type="text" name="modelId" th:value="${modelLlmModelIdConfig.configValue}">
+									</div>
+									<div class="config-value-editor">
+										<label for="apiBaseUrl">请求地址</label>
+										<input id="apiBaseUrl" type="text" name="apiBaseUrl" th:value="${modelLlmApiBaseUrlConfig.configValue}">
+									</div>
+									<div class="config-value-editor">
+										<label for="apiKey">模型 API Key</label>
+										<input id="apiKey" type="password" name="apiKey" placeholder="已配置时留空表示保持原值">
+										<div class="small-note">敏感配置不会在页面回显，留空表示不修改当前值。</div>
+									</div>
+									<div class="actions">
+										<button class="primary-btn" type="submit">保存模型配置</button>
+									</div>
+								</form>
+							</div>
+						</section>
+
+						<section class="config-subsection" th:if="${!#lists.isEmpty(modelEmbeddingConfigs)}">
+							<div class="subsection-head">
 								<div>
-									<label>配置名称</label>
-									<input type="text" name="configName" th:value="${config.configName}">
+									<h5>向量模型参数</h5>
+									<p>向量模型相关参数暂保持现有维护方式，便于后续单独调整。</p>
 								</div>
-								<div>
-									<label>配置分组</label>
-									<input type="text" name="configGroup" th:value="${config.configGroup}">
+								<span class="tag" th:text="${#lists.size(modelEmbeddingConfigs)} + ' 项'"></span>
+							</div>
+							<div class="config-list">
+								<div class="config-card" th:each="config : ${modelEmbeddingConfigs}" th:id="${'config-' + config.id}" th:with="definition=${configDefinitions.get(config.configKey)}">
+									<div class="group-title">
+										<div>
+											<h5 th:text="${definition.name}"></h5>
+											<span class="tag subtle-tag" th:if="${definition.sensitive}">敏感项</span>
+										</div>
+										<span th:class="${config.enabled} ? 'status-chip enabled' : 'status-chip disabled'"
+										      th:text="${config.enabled} ? '已生效' : '已停用'"></span>
+									</div>
+
+									<p class="config-description" th:text="${definition.description}"></p>
+
+									<form th:action="@{/configs/{id}/update(id=${config.id})}" method="post">
+										<input type="hidden" name="configKey" th:value="${config.configKey}">
+										<div class="config-value-editor">
+											<label>是否生效</label>
+											<select name="enabled">
+												<option value="true" th:selected="${config.enabled}">启用</option>
+												<option value="false" th:selected="${!config.enabled}">停用</option>
+											</select>
+											<label>配置值</label>
+											<input type="number" step="0.01" name="configValue" th:if="${definition.valueType == 'number'}" th:value="${config.configValue}">
+											<input type="password" name="configValue" th:if="${definition.sensitive}" placeholder="已配置时留空表示保持原值">
+											<textarea name="configValue" th:if="${definition.valueType == 'json'}" th:text="${config.configValue}"></textarea>
+											<input type="text" name="configValue" th:if="${definition.valueType == 'string' && !definition.sensitive}" th:value="${config.configValue}">
+											<div class="small-note" th:if="${definition.sensitive}">敏感配置不会在页面回显，留空表示不修改当前值。</div>
+										</div>
+										<div class="actions">
+											<button class="primary-btn" type="submit">保存配置值</button>
+										</div>
+									</form>
 								</div>
 							</div>
-							<div class="inline-grid">
+						</section>
+					</div>
+
+					<div class="config-list" th:if="${activeGroup != 'model' and !#lists.isEmpty(activeConfigs)}">
+						<div class="config-card" th:each="config : ${activeConfigs}" th:id="${'config-' + config.id}" th:with="definition=${configDefinitions.get(config.configKey)}">
+							<div class="group-title">
 								<div>
-									<label>值类型</label>
-									<select name="valueType">
-										<option value="string" th:selected="${config.valueType == 'string'}">string</option>
-										<option value="number" th:selected="${config.valueType == 'number'}">number</option>
-										<option value="boolean" th:selected="${config.valueType == 'boolean'}">boolean</option>
-										<option value="json" th:selected="${config.valueType == 'json'}">json</option>
-									</select>
+									<h5 th:text="${definition.name}"></h5>
+									<span class="tag subtle-tag" th:if="${definition.sensitive}">敏感项</span>
 								</div>
-								<div>
-									<label>是否启用</label>
+								<span th:class="${config.enabled} ? 'status-chip enabled' : 'status-chip disabled'"
+								      th:text="${config.enabled} ? '已生效' : '已停用'"></span>
+							</div>
+
+							<p class="config-description" th:text="${definition.description}"></p>
+
+							<form th:action="@{/configs/{id}/update(id=${config.id})}" method="post">
+								<input type="hidden" name="configKey" th:value="${config.configKey}">
+								<div class="config-value-editor">
+									<label>是否生效</label>
 									<select name="enabled">
 										<option value="true" th:selected="${config.enabled}">启用</option>
 										<option value="false" th:selected="${!config.enabled}">停用</option>
 									</select>
+									<label>配置值</label>
+									<select name="configValue" th:if="${definition.valueType == 'boolean'}">
+										<option value="true" th:selected="${config.configValue == 'true'}">true</option>
+										<option value="false" th:selected="${config.configValue == 'false'}">false</option>
+									</select>
+									<input type="number" step="0.01" name="configValue" th:if="${definition.valueType == 'number'}" th:value="${config.configValue}">
+									<input type="password" name="configValue" th:if="${definition.sensitive}" placeholder="已配置时留空表示保持原值">
+									<textarea name="configValue" th:if="${definition.valueType == 'json' || definition.key == 'prompt.system.template'}" th:text="${config.configValue}"></textarea>
+									<input type="text" name="configValue" th:if="${definition.valueType == 'string' && !definition.sensitive && definition.key != 'prompt.system.template'}" th:value="${config.configValue}">
+									<div class="small-note" th:if="${definition.sensitive}">敏感配置不会在页面回显，留空表示不修改当前值。</div>
 								</div>
-								<div>
-									<label>说明</label>
-									<input type="text" name="description" th:value="${config.description}">
+								<div class="actions">
+									<button class="primary-btn" type="submit">保存配置值</button>
 								</div>
-							</div>
-							<div>
-								<label>配置值</label>
-								<textarea name="configValue" th:text="${config.configValue}"></textarea>
-							</div>
-							<div class="actions">
-								<button class="primary-btn" type="submit">保存修改</button>
-							</div>
-						</form>
-
-						<form th:action="@{/configs/{id}/status(id=${config.id})}" method="post">
-							<input type="hidden" name="enabled" th:value="${!config.enabled}">
-							<button th:class="${config.enabled} ? 'warning-btn' : 'secondary-btn'" type="submit"
-							        th:text="${config.enabled} ? '快速停用' : '快速启用'"></button>
-						</form>
+							</form>
+						</div>
 					</div>
-				</div>
-			</div>
-		</section>
+
+					<div class="empty-state" th:if="${#lists.isEmpty(activeConfigs)}">
+						<h4>当前分组没有可维护配置项</h4>
+						<p>请检查固定配置目录是否已经同步，或切换到其他配置分组。</p>
+					</div>
+				</section>
+			</section>
+		</div>
 	</main>
 </div>
 </body>

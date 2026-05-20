@@ -3,6 +3,7 @@ package com.qingyun.systemconfig.repository;
 import com.qingyun.systemconfig.model.SystemConfigItem;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -39,6 +40,16 @@ public class SystemConfigRepository {
                 order by config_group asc, config_key asc
                 """;
         return jdbcTemplate.query(sql, ROW_MAPPER);
+    }
+
+    public Optional<SystemConfigItem> findById(Long id) {
+        String sql = """
+                select id, config_key, config_name, config_group, config_value, value_type,
+                       description, is_enabled, created_at, updated_at
+                from system_config
+                where id = ?
+                """;
+        return jdbcTemplate.query(sql, ROW_MAPPER, id).stream().findFirst();
     }
 
     public boolean existsByConfigKey(String configKey) {
