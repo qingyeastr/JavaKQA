@@ -41,13 +41,13 @@ class AssistantApiTests {
     @Test
     void shouldReturnPlaceholderChatResponseWithoutLogin() throws Exception {
         mockMvc.perform(post("/api/assistant/chat")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {
-                                  "sessionId": "demo-session",
-                                  "message": "Spring Boot 的自动配置原理是什么？"
-                                }
-                                """))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {
+                          "sessionId": "demo-session",
+                          "message": "Spring Boot 的自动配置原理是什么？"
+                        }
+                        """))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.sessionId").value("demo-session"))
                 .andExpect(jsonPath("$.status").value("PENDING_IMPLEMENTATION"))

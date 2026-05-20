@@ -78,26 +78,28 @@ public class ConfigController {
         Map<String, List<SystemConfigItem>> groupedConfigs = systemConfigService.listGroupedConfigs();
         String activeGroup = resolveActiveGroup(preferredGroup);
         List<SystemConfigItem> activeConfigs = StringUtils.hasText(activeGroup)
-            ? groupedConfigs.getOrDefault(activeGroup, List.of())
-            : List.of();
+                ? groupedConfigs.getOrDefault(activeGroup, List.of())
+                : List.of();
 
         model.addAttribute("groupedConfigs", groupedConfigs);
         model.addAttribute("configGroups", SystemConfigCatalog.groups());
         model.addAttribute("configDefinitions", SystemConfigCatalog.items().stream()
-                .collect(Collectors.toMap(ConfigItemDefinition::key, Function.identity(), (left, right) -> left, LinkedHashMap::new)));
+                .collect(Collectors.toMap(ConfigItemDefinition::key, Function.identity(), (left, right) -> left,
+                        LinkedHashMap::new)));
         model.addAttribute("activeGroup", activeGroup);
         model.addAttribute("activeGroupDefinition", StringUtils.hasText(activeGroup)
                 ? SystemConfigCatalog.findGroup(activeGroup).orElse(null)
                 : null);
         model.addAttribute("activeConfigs", activeConfigs);
         Map<String, SystemConfigItem> activeConfigMap = activeConfigs.stream()
-            .collect(Collectors.toMap(SystemConfigItem::getConfigKey, Function.identity(), (left, right) -> left, LinkedHashMap::new));
+                .collect(Collectors.toMap(SystemConfigItem::getConfigKey, Function.identity(), (left, right) -> left,
+                        LinkedHashMap::new));
         model.addAttribute("modelLlmModelIdConfig", activeConfigMap.get("model.llm.model-id"));
         model.addAttribute("modelLlmApiBaseUrlConfig", activeConfigMap.get("model.llm.api-base-url"));
         model.addAttribute("modelLlmApiKeyConfig", activeConfigMap.get("model.llm.api-key"));
         model.addAttribute("modelEmbeddingConfigs", activeConfigs.stream()
-            .filter(item -> item.getConfigKey().startsWith("model.embedding."))
-            .toList());
+                .filter(item -> item.getConfigKey().startsWith("model.embedding."))
+                .toList());
     }
 
     private LoginUser currentUser(HttpSession session) {

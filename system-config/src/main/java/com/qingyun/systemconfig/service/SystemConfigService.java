@@ -79,7 +79,8 @@ public class SystemConfigService {
                 changed = true;
             }
             String normalizedCatalogValue = normalizeCatalogValue(definition, existingItem.getConfigValue());
-            if (StringUtils.hasText(normalizedCatalogValue) && !normalizedCatalogValue.equals(existingItem.getConfigValue())) {
+            if (StringUtils.hasText(normalizedCatalogValue)
+                    && !normalizedCatalogValue.equals(existingItem.getConfigValue())) {
                 existingItem.setConfigValue(normalizedCatalogValue);
                 changed = true;
             }
@@ -116,16 +117,16 @@ public class SystemConfigService {
         operationLogService.record(operator.id(), "SYSTEM_CONFIG", "UPDATE", "更新固定配置项：" + existingItem.getConfigKey());
     }
 
-        public void updateModelLlmSettings(String modelId, String apiBaseUrl, String apiKey, LoginUser operator) {
+    public void updateModelLlmSettings(String modelId, String apiBaseUrl, String apiKey, LoginUser operator) {
         Map<String, SystemConfigItem> existingItems = systemConfigRepository.findAll().stream()
-            .collect(Collectors.toMap(SystemConfigItem::getConfigKey, Function.identity(), (left, right) -> left));
+                .collect(Collectors.toMap(SystemConfigItem::getConfigKey, Function.identity(), (left, right) -> left));
 
         updateModelLlmItem(existingItems, "model.llm.model-id", modelId);
         updateModelLlmItem(existingItems, "model.llm.api-base-url", apiBaseUrl);
         updateModelLlmItem(existingItems, "model.llm.api-key", apiKey);
 
         operationLogService.record(operator.id(), "SYSTEM_CONFIG", "UPDATE", "更新大语言模型配置");
-        }
+    }
 
     public AssistantRuntimeConfigResponse getAssistantRuntimeConfig() {
         Map<String, SystemConfigItem> configIndex = systemConfigRepository.findAll().stream()
@@ -134,9 +135,9 @@ public class SystemConfigService {
 
         return new AssistantRuntimeConfigResponse(
                 new AssistantRuntimeConfigResponse.ModelConfig(
-                stringValue(configIndex, "model.llm.model-id", "model.llm.default-name"),
-                stringValue(configIndex, "model.llm.api-base-url", "model.llm.api-url"),
-                intValue(configIndex, "model.llm.timeout-ms", DEFAULT_LLM_TIMEOUT_MS),
+                        stringValue(configIndex, "model.llm.model-id", "model.llm.default-name"),
+                        stringValue(configIndex, "model.llm.api-base-url", "model.llm.api-url"),
+                        intValue(configIndex, "model.llm.timeout-ms", DEFAULT_LLM_TIMEOUT_MS),
                         stringValue(configIndex, "model.embedding.name"),
                         intValue(configIndex, "model.embedding.dimension")),
                 new AssistantRuntimeConfigResponse.RetrievalConfig(
@@ -165,7 +166,8 @@ public class SystemConfigService {
         item.setConfigKey(definition.key());
         item.setConfigName(definition.name());
         item.setConfigGroup(definition.groupKey());
-        String initialValue = StringUtils.hasText(configValueOverride) ? configValueOverride : definition.defaultValue();
+        String initialValue = StringUtils.hasText(configValueOverride) ? configValueOverride
+                : definition.defaultValue();
         item.setConfigValue(normalizeCatalogValue(definition, initialValue));
         item.setValueType(definition.valueType());
         item.setDescription(definition.description());

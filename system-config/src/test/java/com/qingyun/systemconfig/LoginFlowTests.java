@@ -50,8 +50,8 @@ class LoginFlowTests {
     @Test
     void shouldRenderFixedConfigPageAfterLogin() throws Exception {
         MvcResult loginResult = mockMvc.perform(post("/login")
-                        .param("username", "admin")
-                        .param("password", "123456"))
+                .param("username", "admin")
+                .param("password", "123456"))
                 .andExpect(status().is3xxRedirection())
                 .andReturn();
 
@@ -59,9 +59,9 @@ class LoginFlowTests {
         mockMvc.perform(get("/configs").session(session))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("模型配置")))
-            .andExpect(content().string(containsString("参数定位")))
-            .andExpect(content().string(containsString("大语言模型配置")))
-            .andExpect(content().string(not(containsString("自定义模型列表"))))
-            .andExpect(content().string(not(containsString("前台助手接口"))));
+                .andExpect(content().string(containsString("参数定位")))
+                .andExpect(content().string(containsString("大语言模型配置")))
+                .andExpect(content().string(not(containsString("自定义模型列表"))))
+                .andExpect(content().string(not(containsString("前台助手接口"))));
     }
 }

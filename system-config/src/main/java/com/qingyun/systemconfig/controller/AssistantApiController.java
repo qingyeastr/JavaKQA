@@ -32,7 +32,8 @@ public class AssistantApiController {
     @PostMapping("/chat")
     public AssistantChatResponse chat(@Valid @RequestBody AssistantChatRequest request) {
         AssistantRuntimeConfigResponse runtimeConfig = systemConfigService.getAssistantRuntimeConfig();
-        String sessionId = StringUtils.hasText(request.sessionId()) ? request.sessionId() : UUID.randomUUID().toString();
+        String sessionId = StringUtils.hasText(request.sessionId()) ? request.sessionId()
+                : UUID.randomUUID().toString();
         return new AssistantChatResponse(
                 sessionId,
                 "PENDING_IMPLEMENTATION",
