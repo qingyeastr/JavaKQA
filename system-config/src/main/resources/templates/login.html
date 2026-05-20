@@ -4,10 +4,13 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>系统配置模块登录</title>
-	<link rel="stylesheet" th:href="@{/css/app.css(v='20260520b')}">
+	<link rel="stylesheet" th:href="@{/css/app.css(v='20260520c')}">
 </head>
 <body>
-<main class="auth-shell">
+<main class="auth-shell has-topbar">
+	<div class="auth-topbar">
+		<a class="auth-switch-link" th:href="${portalLoginUrl}">前台体验入口</a>
+	</div>
 	<section class="auth-card">
 		<div class="brand-kicker">JavaKQA</div>
 		<h1 class="brand-title">系统配置模块</h1>

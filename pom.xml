@@ -21,6 +21,7 @@
 	<modules>
 		<module>framework</module>
 		<module>system-config</module>
+		<module>user-portal</module>
 	</modules>
 
 	<properties>

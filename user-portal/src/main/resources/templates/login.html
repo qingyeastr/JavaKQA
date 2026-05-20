@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>JavaKQA 前台登录</title>
+	<link rel="stylesheet" th:href="@{/css/app.css(v='20260520c')}">
+</head>
+<body>
+<main class="auth-shell has-topbar">
+	<div class="auth-topbar">
+		<a class="auth-switch-link" th:href="${adminLoginUrl}">管理员登录</a>
+	</div>
+	<section class="auth-card auth-card-wide">
+		<div class="auth-split">
+			<div class="portal-auth-side">
+				<div>
+					<div class="brand-kicker">JavaKQA</div>
+					<h1 class="brand-title">前台体验入口</h1>
+					<p class="brand-subtitle">这里作为普通用户访问智能问答助手的入口，先把问答、检索、知识库、反馈和分析等核心页面原型完整搭起来。</p>
+				</div>
+				<div>
+					<div class="hint-box portal-hint-box">演示阶段支持任意用户名登录，密码统一为 123456。</div>
+					<div class="auth-preview-grid">
+						<article class="auth-preview-card">
+							<strong>智能问答</strong>
+							<span>提问、引用来源、连续追问</span>
+						</article>
+						<article class="auth-preview-card">
+							<strong>知识库管理</strong>
+							<span>文档导入、切片预览、状态巡检</span>
+						</article>
+						<article class="auth-preview-card">
+							<strong>文档检索</strong>
+							<span>关键词检索、语义召回、结果融合</span>
+						</article>
+						<article class="auth-preview-card">
+							<strong>数据分析</strong>
+							<span>问答量、热点主题、未命中问题</span>
+						</article>
+					</div>
+				</div>
+			</div>
+
+			<div class="auth-form-pane">
+				<div class="auth-form-head">
+					<div class="brand-kicker">User Sign In</div>
+					<h2>登录前台</h2>
+					<p>先进入前台原型页，后续再逐步接入真实用户体系与接口能力。</p>
+				</div>
+
+				<div class="error-message" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
+				<form th:action="@{/login}" th:object="${portalLoginForm}" method="post">
+					<div>
+						<label for="portalUsername">用户名</label>
+						<input id="portalUsername" type="text" th:field="*{username}" placeholder="例如 student01">
+						<div class="field-error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+					</div>
+					<div>
+						<label for="portalPassword">密码</label>
+						<input id="portalPassword" type="password" th:field="*{password}" placeholder="请输入演示密码 123456">
+						<div class="field-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+					</div>
+					<button class="primary-btn" type="submit">进入前台</button>
+				</form>
+
+				<p class="auth-footnote">如果你要维护后台运行参数、管理员账号或日志，请使用右上角按钮切换到管理员登录页。</p>
+			</div>
+		</div>
+	</section>
+</main>
+</body>
+</html>

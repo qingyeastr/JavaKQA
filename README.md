@@ -6,7 +6,7 @@ JavaKQA 是一个面向 Java 后端技术生态的智能问答助手系统，项
 
 本系统聚焦 Spring Boot、Spring Framework、MyBatis、RocketMQ、Redis、MySQL 等常见后端技术，围绕“文档采集与切片、知识检索、智能问答、会话管理、反馈优化、数据分析、系统配置”七大模块完成整体设计与实现。
 
-当前仓库处于项目初始化阶段，后端已完成 Spring Boot 基础骨架搭建，前端、知识库构建、检索链路与 RAG 问答能力将按 README 中的设计逐步落地。
+当前仓库已完成 Spring Boot 多模块骨架搭建，其中后台管理与普通用户前台原型已可独立启动，知识库构建、检索链路与 RAG 问答能力将按 README 中的设计逐步落地。
 
 ## 项目目标
 
@@ -63,8 +63,8 @@ JavaKQA 是一个面向 Java 后端技术生态的智能问答助手系统，项
 
 ### 前端
 
-- Vue 3
-- Vite
+- 当前阶段：基于 Spring Boot + Thymeleaf 的普通用户前台原型
+- 长期规划：Vue 3 + Vite 独立前端工程
 - Web 页面交互式问答界面
 
 ### 数据与检索
@@ -154,48 +154,56 @@ JavaKQA 是一个面向 Java 后端技术生态的智能问答助手系统，项
 
 当前仓库已具备以下基础：
 
-- 已重构为 Maven 多模块工程，包含 framework 与 system-config 两个模块
+- 已重构为 Maven 多模块工程，包含 framework、system-config、user-portal 三个模块
 - framework 模块承载可复用的基础实体和登录会话常量
 - system-config 模块提供浏览器可访问的后台系统，包含登录、配置管理、管理员账号管理和操作日志页面
+- user-portal 模块提供普通用户前台原型，包含独立登录页和七大前台模块页面骨架
 - system-config 模块已内置 PostgreSQL 连接配置与建表脚本，启动时会自动初始化核心表
 
 当前仓库尚未完成以下内容：
 
-- Vue 前端工程
+- Vue 3 + Vite 独立前端工程正式化
 - 文档采集与解析模块
 - 文档切片与知识库存储模块
 - 检索模块与向量检索能力
 - RAG 问答服务与模型接入
-- 用户反馈、数据分析、系统配置后台页面
+- 与真实业务接口联通的前台页面
 
 ## 当前模块结构
 
 - framework：公共基础模块，放通用实体、登录态对象、会话常量等可复用代码
 - system-config：系统配置后台模块，负责页面、登录、配置管理、用户管理与日志管理
+- user-portal：普通用户前台模块，负责前台登录、产品概览以及问答、检索、知识库、反馈、分析等页面原型
 
 system-config 模块当前默认数据库配置位于 system-config/src/main/resources/application.properties。
 默认管理员账号会在首次启动时自动写入 PostgreSQL：admin / 123456。
+user-portal 模块当前默认配置位于 user-portal/src/main/resources/application.properties，默认端口为 8081，演示阶段支持任意用户名 + 密码 123456 登录。
 
 ## 启动方式
 
-当前阶段可先启动 system-config 模块：
+当前阶段可分别启动后台与前台模块：
 
 ```bash
 ./mvnw -pl system-config -am spring-boot:run
+./mvnw -pl user-portal -am spring-boot:run
 ```
 
 如果首次导入后本地还没有打过包，也可以直接执行：
 
 ```bash
-./mvnw -pl system-config -am package
+./mvnw -pl system-config,user-portal -am package
 java -jar system-config/target/system-config-0.0.1-SNAPSHOT.jar
+java -jar user-portal/target/user-portal-0.0.1-SNAPSHOT.jar
 ```
 
 启动后在本地浏览器访问：
 
 ```text
-http://localhost:8080/login
+后台管理员入口：http://localhost:8080/login
+普通用户前台入口：http://localhost:8081/login
 ```
+
+两个登录页右上角均保留跳转按钮，可在前台与后台之间切换。
 
 或执行测试：
 
