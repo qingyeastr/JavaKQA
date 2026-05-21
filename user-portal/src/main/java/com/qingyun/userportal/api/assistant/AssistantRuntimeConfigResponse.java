@@ -1,4 +1,4 @@
-package com.qingyun.systemconfig.api.assistant;
+package com.qingyun.userportal.api.assistant;
 
 public record AssistantRuntimeConfigResponse(
         ModelConfig model,

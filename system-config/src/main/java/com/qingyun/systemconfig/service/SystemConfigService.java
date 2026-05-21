@@ -1,7 +1,6 @@
 package com.qingyun.systemconfig.service;
 
 import com.qingyun.framework.security.LoginUser;
-import com.qingyun.systemconfig.api.assistant.AssistantRuntimeConfigResponse;
 import com.qingyun.systemconfig.configcatalog.ConfigItemDefinition;
 import com.qingyun.systemconfig.configcatalog.SystemConfigCatalog;
 import com.qingyun.systemconfig.model.SystemConfigItem;
@@ -126,39 +125,6 @@ public class SystemConfigService {
         updateModelLlmItem(existingItems, "model.llm.api-key", apiKey);
 
         operationLogService.record(operator.id(), "SYSTEM_CONFIG", "UPDATE", "更新大语言模型配置");
-    }
-
-    public AssistantRuntimeConfigResponse getAssistantRuntimeConfig() {
-        Map<String, SystemConfigItem> configIndex = systemConfigRepository.findAll().stream()
-                .filter(item -> SystemConfigCatalog.findItem(item.getConfigKey()).isPresent())
-                .collect(Collectors.toMap(SystemConfigItem::getConfigKey, Function.identity(), (left, right) -> left));
-
-        return new AssistantRuntimeConfigResponse(
-                new AssistantRuntimeConfigResponse.ModelConfig(
-                        stringValue(configIndex, "model.llm.model-id", "model.llm.default-name"),
-                        stringValue(configIndex, "model.llm.api-base-url", "model.llm.api-url"),
-                        intValue(configIndex, "model.llm.timeout-ms", DEFAULT_LLM_TIMEOUT_MS),
-                        stringValue(configIndex, "model.embedding.name"),
-                        intValue(configIndex, "model.embedding.dimension")),
-                new AssistantRuntimeConfigResponse.RetrievalConfig(
-                        intValue(configIndex, "retrieval.keyword.top-k"),
-                        intValue(configIndex, "retrieval.semantic.top-k"),
-                        doubleValue(configIndex, "retrieval.hybrid.weight"),
-                        booleanValue(configIndex, "retrieval.rerank.enabled"),
-                        intValue(configIndex, "retrieval.rerank.top-n"),
-                        doubleValue(configIndex, "retrieval.similarity-threshold"),
-                        intValue(configIndex, "retrieval.min-recall-count")),
-                new AssistantRuntimeConfigResponse.PromptConfig(
-                        stringValue(configIndex, "prompt.system.template"),
-                        booleanValue(configIndex, "prompt.query-rewrite.enabled"),
-                        intValue(configIndex, "prompt.context.window-size"),
-                        intValue(configIndex, "prompt.answer.max-length"),
-                        booleanValue(configIndex, "prompt.reference.enabled")),
-                new AssistantRuntimeConfigResponse.SystemSwitchConfig(
-                        booleanValue(configIndex, "system.knowledge-upload.enabled"),
-                        booleanValue(configIndex, "system.feedback.enabled"),
-                        booleanValue(configIndex, "system.analytics.enabled"),
-                        booleanValue(configIndex, "system.sensitive-filter.enabled")));
     }
 
     private void insertDefinition(ConfigItemDefinition definition, String configValueOverride) {

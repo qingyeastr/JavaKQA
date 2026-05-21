@@ -76,4 +76,20 @@ class PortalLoginFlowTests {
                 .andExpect(content().string(containsString("数据分析")))
                 .andExpect(content().string(containsString("今日问答量")));
     }
+
+    @Test
+    void shouldRenderQaModuleAfterLogin() throws Exception {
+        MvcResult loginResult = mockMvc.perform(post("/login")
+                .param("username", "student01")
+                .param("password", "123456"))
+                .andExpect(status().is3xxRedirection())
+                .andReturn();
+
+        MockHttpSession session = (MockHttpSession) loginResult.getRequest().getSession(false);
+        mockMvc.perform(get("/qa").session(session))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("对话列表")))
+                .andExpect(content().string(containsString("新建对话")))
+                .andExpect(content().string(containsString("独立 intelligent-qa 模块")));
+    }
 }

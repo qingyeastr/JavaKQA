@@ -4,7 +4,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title th:text="'JavaKQA 前台 - ' + ${activePortalModule.label}">JavaKQA 前台</title>
-	<link rel="stylesheet" th:href="@{/css/app.css(v='20260520c')}">
+	<link rel="stylesheet" th:href="@{/css/app.css(v='20260521a')}">
 </head>
 <body>
 <div class="portal-shell">
@@ -131,67 +131,74 @@
 		</section>
 
 		<section class="portal-section-stack" th:if="${activePortalModule.key == 'qa'}">
-			<div class="portal-grid-2">
-				<article class="portal-card">
-					<div class="portal-section-head">
-						<h3>提问区</h3>
-						<span class="tag">RAG 问答</span>
+			<div class="qa-workbench"
+				 data-assistant-app
+				 th:attr="data-runtime-url=@{/api/assistant/runtime-config},data-conversations-url=@{/api/assistant/conversations},data-chat-url=@{/api/assistant/chat}">
+				<aside class="portal-card qa-sidebar">
+					<div class="qa-sidebar-head">
+						<div>
+							<h3>对话列表</h3>
+							<p>第一版已按独立 intelligent-qa 模块接入，当前支持新建会话、保存消息与连续追问。</p>
+						</div>
+						<button class="primary-btn" type="button" data-new-conversation>新建对话</button>
 					</div>
-					<p>问题入口保留示例问题、输入框与连续追问按钮，便于普通用户直接开始使用。</p>
-					<div class="portal-pill-list">
-						<span class="portal-pill">Spring Boot 自动配置原理</span>
-						<span class="portal-pill">MyBatis ResultMap 使用方式</span>
-						<span class="portal-pill">Redis 哨兵与集群差异</span>
+					<label class="qa-search" for="qa-conversation-search">
+						<span>搜索会话</span>
+						<input id="qa-conversation-search" type="search" placeholder="按标题或摘要筛选" data-conversation-search>
+					</label>
+					<div class="qa-conversation-scroll" data-conversation-groups>
+						<div class="qa-empty-state">当前还没有对话，点击“新建对话”或直接在右侧发送第一条问题。</div>
 					</div>
-					<div class="portal-composer">
-						<label for="qa-input">你的问题</label>
-						<textarea id="qa-input" placeholder="例如：Spring Boot 的自动配置为什么可以按需生效？"></textarea>
-						<div class="actions">
-							<button class="primary-btn" type="button">发送问题</button>
-							<button class="secondary-btn" type="button">继续追问</button>
+				</aside>
+
+				<article class="portal-card qa-chat-panel">
+					<div class="qa-chat-header">
+						<div>
+							<span class="portal-kicker">问答主链路</span>
+							<h3 data-current-title>新对话</h3>
+							<p>左侧是历史对话列表，右侧聚焦当前会话的消息流、引用来源和输入区。</p>
+						</div>
+						<div class="qa-header-meta">
+							<span class="qa-status-chip" data-connection-status>正在连接 intelligent-qa</span>
+							<span class="qa-status-chip secondary" data-current-status>等待新对话</span>
+							<button class="secondary-btn" type="button" data-delete-conversation disabled>删除当前对话</button>
 						</div>
 					</div>
-				</article>
-				<article class="portal-card portal-card-strong">
-					<div class="portal-section-head">
-						<h3>答案预览</h3>
-						<span class="tag">含来源</span>
-					</div>
-					<div class="portal-answer-block">
-						<p>自动配置之所以能“按需生效”，核心在于 Spring Boot 会在启动时读取自动配置清单，并结合条件注解决定是否装配 Bean。只有当类路径、配置项或上下文条件满足时，对应自动配置类才会生效。</p>
-						<p>前台答案区预留了“要点总结 + 展开解释 + 引用来源”三层结构，后续可以直接挂接真实 RAG 返回结果。</p>
-					</div>
-					<div class="portal-reference-list">
-						<article class="portal-reference-card">
-							<strong>引用 01</strong>
-							<span>Spring Boot Reference Documentation / Auto-configuration</span>
-						</article>
-						<article class="portal-reference-card">
-							<strong>引用 02</strong>
-							<span>Spring Framework Core / Bean Definition & Conditions</span>
-						</article>
-					</div>
-				</article>
-			</div>
 
-			<div class="portal-grid-2">
-				<article class="portal-card">
-					<h3>多轮上下文</h3>
-					<p>这里预留“会话摘要 + 当前追问意图 + 记忆片段”的展示区域，用来支撑连续追问体验。</p>
-					<div class="portal-timeline compact">
-						<div><strong>上一轮</strong><span>用户询问自动配置与条件装配的关系。</span></div>
-						<div><strong>当前轮</strong><span>系统聚焦在 Conditional 注解和自动配置导入链路。</span></div>
-						<div><strong>下一步</strong><span>可继续追问 starter 如何触发自动配置装配。</span></div>
+					<div class="qa-runtime-strip">
+						<div class="qa-runtime-item">
+							<span>当前模型</span>
+							<strong data-runtime-model>待加载</strong>
+						</div>
+						<div class="qa-runtime-item">
+							<span>检索策略</span>
+							<strong data-runtime-retrieval>待加载</strong>
+						</div>
+						<div class="qa-runtime-item">
+							<span>引用策略</span>
+							<strong data-runtime-reference>待加载</strong>
+						</div>
 					</div>
-				</article>
-				<article class="portal-card">
-					<h3>回答辅助动作</h3>
-					<p>问答区下方预留了对用户最常用的二次动作，后续可与真实接口打通。</p>
-					<div class="portal-action-grid">
-						<div>复制答案</div>
-						<div>查看引用来源</div>
-						<div>继续追问</div>
-						<div>提交反馈</div>
+
+					<div class="portal-pill-list qa-sample-list">
+						<button class="portal-pill action-pill" type="button" data-sample-question="Spring Boot 的自动配置为什么可以按需生效？">Spring Boot 自动配置原理</button>
+						<button class="portal-pill action-pill" type="button" data-sample-question="MyBatis 的 ResultMap 更适合解决哪些映射问题？">MyBatis ResultMap 使用方式</button>
+						<button class="portal-pill action-pill" type="button" data-sample-question="Redis 哨兵和集群在高可用与扩展性上有什么差异？">Redis 哨兵与集群差异</button>
+					</div>
+
+					<div class="qa-message-stream" data-message-list>
+						<div class="qa-empty-state">开始一个新问题，消息会按时间流保存在当前会话中。</div>
+					</div>
+
+					<div class="qa-composer-wrap">
+						<div class="portal-inline-status" data-composer-status>第一版已接通独立模块，发送问题后会返回占位答案并写入当前会话。</div>
+						<form class="qa-composer-form" data-chat-form>
+							<label for="qa-input">你的问题</label>
+							<textarea id="qa-input" placeholder="例如：Spring Boot 的自动配置为什么可以按需生效？" data-chat-input></textarea>
+							<div class="actions">
+								<button class="primary-btn" type="submit" data-send-button>发送问题</button>
+							</div>
+						</form>
 					</div>
 				</article>
 			</div>
@@ -500,5 +507,6 @@
 		</section>
 	</main>
 </div>
+<script th:if="${activePortalModule.key == 'qa'}" th:src="@{/js/assistant-chat.js(v='20260521a')}"></script>
 </body>
 </html>

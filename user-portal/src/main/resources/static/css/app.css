@@ -1180,6 +1180,289 @@ th {
 	font-weight: 700;
 }
 
+.portal-pill.action-pill {
+	border: none;
+	cursor: pointer;
+	transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.portal-pill.action-pill:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 10px 18px rgba(20, 99, 86, 0.12);
+	background: rgba(20, 99, 86, 0.16);
+}
+
+.portal-inline-status {
+	padding: 12px 14px;
+	border-radius: 18px;
+	background: rgba(20, 99, 86, 0.1);
+	color: var(--accent-strong);
+	line-height: 1.6;
+	font-size: 14px;
+	border: 1px solid rgba(20, 99, 86, 0.12);
+}
+
+.portal-inline-status.is-error {
+	background: var(--danger-soft);
+	color: var(--danger);
+	border-color: rgba(139, 46, 46, 0.18);
+}
+
+.qa-workbench {
+	display: grid;
+	grid-template-columns: 320px minmax(0, 1fr);
+	gap: 18px;
+	align-items: start;
+}
+
+.qa-sidebar,
+.qa-chat-panel {
+	min-height: 720px;
+}
+
+.qa-sidebar {
+	grid-template-rows: auto auto 1fr;
+	align-content: start;
+	gap: 16px;
+}
+
+.qa-sidebar-head,
+.qa-chat-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	gap: 16px;
+}
+
+.qa-search {
+	display: grid;
+	gap: 8px;
+}
+
+.qa-conversation-scroll {
+	max-height: 560px;
+	overflow: auto;
+	padding-right: 4px;
+	display: grid;
+	gap: 18px;
+}
+
+.qa-conversation-group,
+.qa-conversation-list,
+.qa-runtime-strip,
+.qa-citation-list,
+.qa-suggestion-list,
+.qa-composer-wrap {
+	display: grid;
+	gap: 12px;
+}
+
+.qa-conversation-group h4 {
+	margin: 0;
+	font-size: 12px;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--muted);
+}
+
+.qa-conversation-item {
+	width: 100%;
+	text-align: left;
+	padding: 14px 16px;
+	border-radius: 18px;
+	border: 1px solid rgba(215, 225, 234, 0.88);
+	background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(246, 250, 252, 0.98));
+	box-shadow: 0 12px 24px rgba(27, 44, 66, 0.06);
+	display: grid;
+	gap: 6px;
+	color: var(--text);
+	border-radius: 18px;
+}
+
+.qa-conversation-item span,
+.qa-conversation-item small {
+	color: var(--muted);
+	line-height: 1.6;
+}
+
+.qa-conversation-item small {
+	font-size: 12px;
+}
+
+.qa-conversation-item.active {
+	border-color: rgba(20, 99, 86, 0.4);
+	background: linear-gradient(180deg, rgba(228, 243, 239, 0.92), rgba(255, 255, 255, 0.98));
+	box-shadow: 0 16px 28px rgba(20, 99, 86, 0.12);
+}
+
+.qa-chat-panel {
+	grid-template-rows: auto auto auto 1fr auto;
+	align-content: start;
+	gap: 16px;
+}
+
+.qa-header-meta {
+	display: grid;
+	gap: 10px;
+	justify-items: end;
+}
+
+.qa-status-chip {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 10px 14px;
+	border-radius: 999px;
+	background: rgba(20, 99, 86, 0.1);
+	color: var(--accent-strong);
+	font-size: 13px;
+	font-weight: 700;
+	border: 1px solid rgba(20, 99, 86, 0.14);
+}
+
+.qa-status-chip.secondary {
+	background: rgba(50, 82, 132, 0.08);
+	color: #325284;
+	border-color: rgba(50, 82, 132, 0.14);
+}
+
+.qa-status-chip.is-error {
+	background: var(--danger-soft);
+	color: var(--danger);
+	border-color: rgba(139, 46, 46, 0.18);
+}
+
+.qa-runtime-strip {
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.qa-runtime-item {
+	padding: 14px 16px;
+	border-radius: 18px;
+	background: rgba(245, 249, 252, 0.94);
+	border: 1px solid rgba(215, 225, 234, 0.82);
+	box-shadow: 0 12px 24px rgba(27, 44, 66, 0.04);
+	display: grid;
+	gap: 6px;
+}
+
+.qa-runtime-item span {
+	font-size: 12px;
+	font-weight: 700;
+	color: var(--muted);
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+}
+
+.qa-runtime-item strong {
+	font-size: 15px;
+	line-height: 1.5;
+}
+
+.qa-sample-list {
+	align-items: center;
+}
+
+.qa-message-stream {
+	min-height: 420px;
+	max-height: 560px;
+	overflow: auto;
+	padding-right: 6px;
+	display: grid;
+	gap: 14px;
+	align-content: start;
+}
+
+.qa-message {
+	max-width: 86%;
+	padding: 16px 18px;
+	border-radius: 22px;
+	border: 1px solid rgba(215, 225, 234, 0.84);
+	background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(246, 250, 252, 0.98));
+	box-shadow: 0 12px 24px rgba(27, 44, 66, 0.05);
+	display: grid;
+	gap: 12px;
+}
+
+.qa-message.is-user {
+	justify-self: end;
+	background: linear-gradient(180deg, rgba(228, 243, 239, 0.94), rgba(255, 255, 255, 0.98));
+	border-color: rgba(20, 99, 86, 0.18);
+}
+
+.qa-message.is-assistant {
+	justify-self: start;
+}
+
+.qa-message-head {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 12px;
+	font-size: 12px;
+	color: var(--muted);
+}
+
+.qa-message-body {
+	line-height: 1.8;
+	white-space: pre-wrap;
+	color: var(--text);
+}
+
+.qa-citation-card {
+	padding: 12px 14px;
+	border-radius: 16px;
+	background: rgba(20, 99, 86, 0.06);
+	border: 1px solid rgba(20, 99, 86, 0.12);
+	display: grid;
+	gap: 6px;
+}
+
+.qa-citation-card strong {
+	font-size: 13px;
+}
+
+.qa-citation-card span,
+.qa-citation-card p {
+	margin: 0;
+	line-height: 1.6;
+	color: var(--muted);
+	font-size: 13px;
+}
+
+.qa-suggestion-button {
+	padding: 10px 14px;
+	border-radius: 16px;
+	border: 1px solid rgba(50, 82, 132, 0.16);
+	background: rgba(237, 244, 255, 0.86);
+	color: #325284;
+	font-size: 13px;
+	font-weight: 700;
+	text-align: left;
+}
+
+.qa-empty-state {
+	padding: 22px;
+	border-radius: 20px;
+	border: 1px dashed rgba(215, 225, 234, 0.92);
+	background: rgba(248, 251, 253, 0.98);
+	color: var(--muted);
+	line-height: 1.7;
+}
+
+.qa-composer-form {
+	padding: 18px;
+	border-radius: 20px;
+	background: linear-gradient(180deg, rgba(245, 249, 252, 0.98), rgba(255, 255, 255, 0.98));
+	border: 1px solid rgba(215, 225, 234, 0.84);
+	display: grid;
+	gap: 12px;
+}
+
+.qa-composer-form textarea {
+	min-height: 120px;
+}
+
 .field-error {
 	font-size: 13px;
 	color: var(--danger);
@@ -1203,6 +1486,23 @@ th {
 
 	.portal-main {
 		padding: 20px;
+	}
+
+	.qa-workbench {
+		grid-template-columns: 1fr;
+	}
+
+	.qa-runtime-strip {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.qa-sidebar,
+	.qa-chat-panel {
+		min-height: auto;
+	}
+
+	.qa-header-meta {
+		justify-items: start;
 	}
 
 	.portal-metric-row,
@@ -1249,12 +1549,22 @@ th {
 	.portal-metric-row,
 	.portal-metric-row-3,
 	.portal-module-list,
-	.portal-action-grid {
+	.portal-action-grid,
+	.qa-runtime-strip {
 		grid-template-columns: 1fr;
 	}
 
 	.portal-hero {
 		flex-direction: column;
+	}
+
+	.qa-chat-header,
+	.qa-sidebar-head {
+		flex-direction: column;
+	}
+
+	.qa-message {
+		max-width: 100%;
 	}
 
 	.portal-hero-actions {
