@@ -36,8 +36,7 @@ public class AssistantService {
 
     private final AssistantRuntimeConfigService runtimeConfigService;
     private final ConcurrentMap<String, AssistantConversation> conversations = new ConcurrentHashMap<>();
-    private final ConcurrentMap<String, CopyOnWriteArrayList<AssistantMessage>> messagesByConversation =
-            new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, CopyOnWriteArrayList<AssistantMessage>> messagesByConversation = new ConcurrentHashMap<>();
 
     public AssistantService(AssistantRuntimeConfigService runtimeConfigService) {
         this.runtimeConfigService = runtimeConfigService;
@@ -119,7 +118,8 @@ public class AssistantService {
                 LocalDateTime.now());
         appendMessage(conversation.conversationId(), assistantMessage);
 
-        AssistantConversation refreshedConversation = refreshConversation(conversation, trimmedQuestion, assistantMessage.createdAt());
+        AssistantConversation refreshedConversation = refreshConversation(conversation, trimmedQuestion,
+                assistantMessage.createdAt());
         conversations.put(refreshedConversation.conversationId(), refreshedConversation);
 
         return new AssistantChatResponse(
@@ -282,7 +282,8 @@ public class AssistantService {
                             "https://mybatis.org/mybatis-3/sqlmap-xml.html#Result_Maps",
                             0.93));
         }
-        if (normalizedQuestion.contains("redis") || normalizedQuestion.contains("哨兵") || normalizedQuestion.contains("集群")) {
+        if (normalizedQuestion.contains("redis") || normalizedQuestion.contains("哨兵")
+                || normalizedQuestion.contains("集群")) {
             return List.of(
                     new AssistantCitation(
                             3001L,

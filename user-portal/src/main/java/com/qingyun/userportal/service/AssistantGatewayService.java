@@ -51,7 +51,8 @@ public class AssistantGatewayService {
                 .body(AssistantConversationCreatedResponse.class);
     }
 
-    public AssistantConversationMessagesResponse conversationMessages(PortalUserSession portalUser, String conversationId) {
+    public AssistantConversationMessagesResponse conversationMessages(PortalUserSession portalUser,
+            String conversationId) {
         return restClient.get()
                 .uri("/api/assistant/conversations/{conversationId}/messages", conversationId)
                 .header(USER_HEADER, portalUser.username())
